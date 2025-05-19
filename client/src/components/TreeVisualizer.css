@@ -1,0 +1,19 @@
+/* client/src/components/TreeVisualizer.css */
+.tree-canvas-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    min-height: 420px; /* Trochu viac miesta pre plátno a padding */
+    /* background-color: #e1f5fe; Jemne modrá, ak by bola obloha z canvasu priehľadná */
+    padding: 10px;
+    box-sizing: border-box;
+  }
+  
+  .tree-canvas-container canvas {
+    display: block;
+    border: 1px solid #b0bec5; /* Jemný rámik pre plátno */
+    border-radius: 8px; /* Zaoblenie rohov plátna */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Výraznejší tieň */
+    /* background-color sa nastavuje v p5, takže toto je fallback alebo nie je potrebné */
+  }
