@@ -1,16 +1,15 @@
-// client/src/components/HabitItem.jsx
 import React from 'react';
-import './HabitItem.css';
+import './HabitItem.css'; // Uisti sa, že je importovaný
 
 function HabitItem({ habit, onToggle }) {
   return (
     <li className={`habit-item ${habit.completedToday ? 'completed' : ''}`}>
-      <span>
-        {habit.name}
+      <div className="habit-info"> {/* Nový wrapper */}
+        <span className="habit-name">{habit.name}</span>
         <small>(Celkovo splnené: {habit.daysCompleted || 0} dní)</small>
-      </span>
+      </div>
       <button onClick={() => onToggle(habit.id)}>
-        {habit.completedToday ? 'Odznačiť' : 'Splnené'} {/* Zmenil som text "Splnené dnes" na "Splnené" */}
+        {habit.completedToday ? 'Odznačiť' : 'Splnené'}
       </button>
     </li>
   );
