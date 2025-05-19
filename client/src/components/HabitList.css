@@ -1,0 +1,15 @@
+/* client/src/components/HabitList.css */
+.habit-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0; /* Odstráni defaultný margin <ul> */
+  }
+  
+  .habit-list p { /* Štýl pre správu "Zatiaľ žiadne návyky..." */
+    text-align: center;
+    color: #7f8c8d; /* Jemne sivá */
+    padding: 20px 0;
+    font-style: italic;
+    background-color: #f9f9f9; /* Svetlé pozadie pre kontrast, ak je prázdne */
+    border-radius: 4px;
+  }
