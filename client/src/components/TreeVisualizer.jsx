@@ -1,152 +1,211 @@
 import React, { useRef, useEffect } from 'react';
 import p5 from 'p5';
-import './TreeVisualizer.css'; // Uisti sa, že máš tento súbor a je správne naimportovaný
+import './TreeVisualizer.css';
 
-// Helper funkcia pre mapovanie hodnoty z jedného rozsahu do druhého (ostáva)
 const mapRange = (value, inMin, inMax, outMin, outMax) => {
-  if (inMin === inMax) return outMin; // Aby sa predišlo deleniu nulou
+  if (inMin === inMax) return outMin;
   return ((value - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin;
 };
 
-function TreeVisualizer({ growthFactor, totalDaysCompleted }) {
-  const sketchRef = useRef(); // Ref pre DOM element, kam sa pripojí canvas
-  const p5InstanceRef = useRef(null); // Ref pre uloženie p5 inštancie
+// Jednoduchý LCG generátor pseudonáhodných čísel, aby sme neovplyvňovali globálny p5.random
+class SimpleRandom {
+  constructor(seed) {
+    this.seed = seed % 2147483647;
+    if (this.seed <= 0) this.seed += 2147483646;
+  }
+  next() {
+    this.seed = (this.seed * 16807) % 2147483647;
+    return (this.seed - 1) / 2147483646; // Vráti číslo medzi 0 (vrátane) a 1 (bez)
+  }
+  nextRange(min, max) {
+    return min + this.next() * (max - min);
+  }
+  nextIntRange(min, max) {
+      return Math.floor(this.nextRange(min, max + 1)); // +1 aby bolo max inclusive
+  }
+}
+
+
+function TreeVisualizer({ habits, overallGrowthFactor }) {
+  const sketchRef = useRef();
+  const p5InstanceRef = useRef(null);
 
   useEffect(() => {
-    // --- Definícia p5 skice ---
     const sketch = (p) => {
-      // Interné premenné skice pre parametre stromu
-      let currentTotalDays = 0;
-      let currentGrowthFactor = 0;
+      let currentHabits = [];
+      let currentOverallGF = 0;
+      const FIXED_SEED_EMPTY_TREE = 12345; // Seed pre konzistentný prázdny strom
 
-      let baseTrunkLength;
-      let baseTrunkWidth;
-      let branchingAngle;
-      let maxDepth;
-      const minBranchLength = 4; // Minimálna dĺžka vetvy, aby sa ďalej vetvila
-      const lengthRatio = 0.70; // Pomer skrátenia každej novej vetvy
+      // ---- Funkcia na kreslenie JEDNEJ vetvy pre návyk ----
+      const drawHabitBranch = (pInstance, habit, index, totalHabits) => {
+        const branchRand = new SimpleRandom(habit.branchSeed || parseInt(habit.id.substring(0,8), 16)); // Použi seed z habitu
 
-      // Funkcia na aktualizáciu parametrov stromu na základe props
-      const updateTreeParameters = (newTotalDays, newGF) => {
-        currentTotalDays = newTotalDays;
-        currentGrowthFactor = newGF; // Ulož aktuálny growthFactor
+        const maxDaysForFullBranch = 30; // Po koľkých dňoch je vetva "plne" vyvinutá
+        const growthProgress = p.constrain(mapRange(habit.daysCompleted, 0, maxDaysForFullBranch, 0.1, 1), 0.1, 1);
 
-        baseTrunkLength = mapRange(currentTotalDays, 0, 100, 30, 100);
-        baseTrunkLength = p.constrain(baseTrunkLength, 20, 100);
+        let branchLength = branchRand.nextRange(40, 70) * growthProgress;
+        let branchThickness = p.constrain(mapRange(habit.daysCompleted, 0, maxDaysForFullBranch, 1, 6), 1, 8);
+        const maxDepthForBranch = habit.daysCompleted > 5 ? branchRand.nextIntRange(2, 4) : branchRand.nextIntRange(1,2);
+        const angleVariance = 20; // +- stupne
+        let initialAngle;
 
-        baseTrunkWidth = mapRange(currentTotalDays, 0, 100, 3, 15);
-        baseTrunkWidth = p.constrain(baseTrunkWidth, 2, 15);
+        // Rozmiestnenie vetiev pozdĺž kmeňa
+        // Striedavo vľavo / vpravo, začínajúc vyššie pre staršie návyky (nižší index = starší)
+        const heightRatio = mapRange(index, 0, Math.max(1, totalHabits -1 ), 0.75, 0.25); // Vyššie pre staršie
+        const trunkEffectHeight = p.height * 0.6; // Výška kmeňa dostupná pre vetvy
+        
+        pInstance.translate(0, -trunkEffectHeight * (1 - heightRatio)); // Posun na miesto na kmeni
 
-        branchingAngle = p.constrain(mapRange(currentTotalDays, 0, 50, 15, 30), 15, 35);
-        maxDepth = p.constrain(Math.floor(mapRange(currentTotalDays, 0, 70, 3, 8)), 3, 8);
-      };
+        if (index % 2 === 0) { // Párne indexy doprava
+          initialAngle = branchRand.nextRange(20, 50);
+        } else { // Nepárne doľava
+          initialAngle = -branchRand.nextRange(20, 50);
+        }
+        pInstance.rotate(initialAngle);
 
-      // Funkcia na kreslenie jednej vetvy a rekurzívne volanie pre ďalšie
-      const drawBranch = (len, thickness, level) => {
-        if (len < minBranchLength || level > maxDepth) {
-          p.noStroke();
-          // Sviežosť listov závisí od currentGrowthFactor (dnešné splnené návyky)
-          const isFreshGrowth = currentGrowthFactor > 0 && level > maxDepth * 0.5;
-          if (isFreshGrowth) {
-            p.fill(100, p.random(200, 230), 100, 220); // Sviežejšia zelená, mierne náhodná
-          } else {
-            p.fill(34, 139, 34, 180); // Štandardná zelená
+
+        // Rekurzívna funkcia pre vetvenie tejto konkrétnej vetvy
+        function branchOut(len, thick, level) {
+          if (level > maxDepthForBranch || len < 5) {
+            // Nakresli listy ak je návyk splnený, alebo aspoň nejaké ak je starší
+            if (habit.completedToday || habit.daysCompleted > 2) {
+                pInstance.noStroke();
+                let leafColor;
+                if (habit.completedToday) {
+                    leafColor = pInstance.color(
+                        branchRand.nextRange(80,120),
+                        pInstance.map(currentOverallGF, 0, 5, 180, 230), // Jasnejšie zelená ak je viac splnených celkovo
+                        branchRand.nextRange(80,120),
+                        200
+                    );
+                } else {
+                    leafColor = pInstance.color(
+                        branchRand.nextRange(50,80),
+                        branchRand.nextRange(120,160),
+                        branchRand.nextRange(50,80),
+                        150
+                    );
+                }
+                pInstance.fill(leafColor);
+                const leafSize = pInstance.map(thick, 1, 5, 6, 12);
+                for (let i = 0; i < branchRand.nextIntRange(1,3); i++){ // Viac lístkov
+                    pInstance.ellipse(branchRand.nextRange(-leafSize/3, leafSize/3), -leafSize / 2 + branchRand.nextRange(-leafSize/4, leafSize/4), leafSize * branchRand.nextRange(0.7, 1), leafSize * branchRand.nextRange(0.7, 1));
+                }
+            }
+            return;
           }
-          const leafSize = mapRange(thickness, 1, baseTrunkWidth * 0.3, 8, 16);
-          p.ellipse(0, -leafSize / 2, leafSize * p.random(0.7, 0.9), leafSize * p.random(0.9,1.1)); // Náhodnosť veľkosti listov
-          return;
+
+          const brownR = pInstance.map(thick, 1, 8, 100, 130);
+          const brownG = pInstance.map(thick, 1, 8, 60, 90);
+          const brownB = pInstance.map(thick, 1, 8, 20, 50);
+          pInstance.stroke(brownR, brownG, brownB);
+          pInstance.strokeWeight(thick);
+          pInstance.line(0, 0, 0, -len);
+          pInstance.translate(0, -len);
+
+          const branches = branchRand.nextIntRange(1, thick > 2 ? 2 : 1); // Max 2 podvetvy
+          for (let i = 0; i < branches; i++) {
+            pInstance.push();
+            // Striedanie uhlov pre vetvy
+            const angle = (i % 2 === 0) ? branchRand.nextRange(15, angleVariance + 10) : -branchRand.nextRange(15, angleVariance + 10);
+            pInstance.rotate(angle);
+            branchOut(len * branchRand.nextRange(0.6, 0.8), thick * 0.7, level + 1);
+            pInstance.pop();
+          }
         }
-
-        const brownR = p.map(thickness, 1, baseTrunkWidth, 100, 160);
-        const brownG = p.map(thickness, 1, baseTrunkWidth, 50, 80);
-        const brownB = p.map(thickness, 1, baseTrunkWidth, 10, 40);
-        p.stroke(brownR, brownG, brownB);
-        p.strokeWeight(thickness);
-        p.line(0, 0, 0, -len);
-
-        p.translate(0, -len);
-
-        // Pravá vetva
-        p.push();
-        p.rotate(branchingAngle + p.random(-5, 5));
-        drawBranch(len * lengthRatio, thickness * 0.7, level + 1);
-        p.pop();
-
-        // Ľavá vetva
-        p.push();
-        p.rotate(-branchingAngle + p.random(-5, 5));
-        drawBranch(len * lengthRatio, thickness * 0.7, level + 1);
-        p.pop();
-
-        // Voliteľne: stredná vetva pre hustejší strom
-        if (len > minBranchLength * 2.5 && p.random(1) < 0.3) {
-          p.push();
-          p.rotate(p.random(-7, 7));
-          drawBranch(len * lengthRatio * p.random(0.75, 0.85), thickness * 0.6, level + 1);
-          p.pop();
-        }
+        branchOut(branchLength, branchThickness, 1);
       };
+      // -------- Koniec drawHabitBranch --------
+
 
       p.setup = () => {
         p.createCanvas(400, 400).parent(sketchRef.current);
         p.angleMode(p.DEGREES);
-        updateTreeParameters(totalDaysCompleted, growthFactor); // Iniciálne nastavenie parametrov
-        p.noLoop(); // Kreslíme len keď je to potrebné (cez redraw)
-        p.redraw(); // Prvé vykreslenie
+        p.noLoop();
+        // Nastavenie currentHabits a GF z props pri prvom spustení
+        if (habits) currentHabits = habits;
+        if (overallGrowthFactor !== undefined) currentOverallGF = overallGrowthFactor;
+        p.redraw();
       };
 
       p.draw = () => {
+        // --- Pozadie (ako predtým, ale môžeme znížiť náhodnosť alebo použiť SimpleRandom s fixným seedom) ---
+        const bgRand = new SimpleRandom(54321); // Fixný seed pre konzistentné pozadie
         // Gradient oblohy
         for (let i = 0; i <= p.height / 2; i++) {
-          let inter = p.map(i, 0, p.height / 2, 0, 1);
-          let c = p.lerpColor(p.color(135, 206, 250), p.color(220, 240, 255), inter);
-          p.stroke(c);
-          p.line(0, i, p.width, i);
+            let inter = p.map(i, 0, p.height / 2, 0, 1);
+            let c = p.lerpColor(p.color(135, 206, 250), p.color(220, 240, 255), inter); // Tm. modrá hore, sv. modrá dole
+            p.stroke(c);
+            p.line(0, i, p.width, i);
         }
-        // Tráva (viac vrstiev pre hĺbku)
+        // Tráva
         p.noStroke();
-        p.fill(107, 142, 35, 200);
+        p.fill(bgRand.nextIntRange(90,120), bgRand.nextIntRange(130,160), bgRand.nextIntRange(30,50), 200);
         p.rect(0, p.height - 60, p.width, 60);
-        p.fill(85, 107, 47, 180);
+        p.fill(bgRand.nextIntRange(70,100), bgRand.nextIntRange(90,120), bgRand.nextIntRange(40,60), 180);
         p.rect(0, p.height - 45, p.width, 45);
-        p.fill(34, 139, 34, 150);
+        p.fill(bgRand.nextIntRange(30,50), bgRand.nextIntRange(120,150), bgRand.nextIntRange(30,50), 150);
         p.rect(0, p.height - 30, p.width, 30);
 
-        // Kreslenie stromu
+
+        // --- Kreslenie kmeňa ---
         p.push();
-        p.translate(p.width / 2, p.height - 30); // Počiatok na stred spodku (na tráve)
-        drawBranch(baseTrunkLength, baseTrunkWidth, 1);
-        p.pop();
+        p.translate(p.width / 2, p.height - 30); // Počiatok na stred spodku
+
+        let baseTrunkLength, baseTrunkWidth;
+        const kmenRand = new SimpleRandom(FIXED_SEED_EMPTY_TREE); // Konzistentný kmeň
+
+        if (currentHabits.length === 0) {
+          baseTrunkLength = kmenRand.nextRange(30, 50);
+          baseTrunkWidth = kmenRand.nextRange(4, 7);
+        } else {
+          // Kmeň môže trochu rásť s počtom návykov alebo ich "vekom"
+          const totalAge = currentHabits.reduce((sum, h) => sum + h.daysCompleted, 0);
+          baseTrunkLength = p.constrain(mapRange(currentHabits.length + totalAge / 5, 0, 20, 50, 100), 40, 120);
+          baseTrunkWidth = p.constrain(mapRange(currentHabits.length + totalAge / 10, 0, 20, 5, 15), 4, 18);
+        }
+        p.stroke(kmenRand.nextIntRange(100,120), kmenRand.nextIntRange(60,80), kmenRand.nextIntRange(30,50)); // Hnedá farba kmeňa
+        p.strokeWeight(baseTrunkWidth);
+        p.line(0, 0, 0, -baseTrunkLength);
+        p.translate(0, -baseTrunkLength); // Posun na vrch kmeňa pre začiatok vetiev
+
+
+        // --- Kreslenie vetiev pre každý návyk ---
+        currentHabits.forEach((habit, index) => {
+          p.push(); // Izoluj transformácie pre každú vetvu návyku
+          drawHabitBranch(p, habit, index, currentHabits.length);
+          p.pop();
+        });
+
+        p.pop(); // Koniec transformácií pre kmeň
       };
 
-      // Metóda, ktorú bude React volať na aktualizáciu dát a prekreslenie
-      p.updateWithProps = (props) => {
-        updateTreeParameters(props.totalDaysCompleted, props.growthFactor);
-        if (p.width > 0 && p.height > 0) { // Uisti sa, že canvas je pripravený
+      p.updateWithProps = (newProps) => {
+        if (newProps.habits) {
+          currentHabits = newProps.habits.sort((a,b) => new Date(a.createdAt) - new Date(b.createdAt)); // Vždy zoradiť
+        }
+        if (newProps.overallGrowthFactor !== undefined) {
+          currentOverallGF = newProps.overallGrowthFactor;
+        }
+        if (p.width > 0 && p.height > 0) {
           p.redraw();
         }
       };
     };
-    // --- Koniec definície p5 skice ---
 
-
-    // Inicializácia p5 alebo aktualizácia existujúcej inštancie
     if (!p5InstanceRef.current) {
-      // Vytvor novú p5 inštanciu, ak ešte neexistuje
       p5InstanceRef.current = new p5(sketch);
     } else {
-      // Ak p5 inštancia už existuje, len jej pošli nové props
-      p5InstanceRef.current.updateWithProps({ growthFactor, totalDaysCompleted });
+      p5InstanceRef.current.updateWithProps({ habits, overallGrowthFactor });
     }
 
-    // Cleanup funkcia - odstráni p5 inštanciu, keď sa komponent odmontuje
     return () => {
       if (p5InstanceRef.current) {
         p5InstanceRef.current.remove();
-        p5InstanceRef.current = null; // Vyčisti ref
+        p5InstanceRef.current = null;
       }
     };
-  }, [growthFactor, totalDaysCompleted]); // Tento useEffect sa spustí, keď sa zmenia props
+  }, [habits, overallGrowthFactor]); // Znovu spustí useEffect pri zmene habits alebo overallGrowthFactor
 
   return <div ref={sketchRef} className="tree-canvas-container"></div>;
 }
