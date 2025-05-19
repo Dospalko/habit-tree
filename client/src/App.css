@@ -1,107 +1,147 @@
-/* client/src/App.css */
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Merriweather:wght@300;400&display=swap');
+:root {
+  --primary-green: #4CAF50; /* Hlavná zelená pre akcenty */
+  --primary-green-darker: #388E3C; /* Tmavšia pre hover efekty */
+  --light-green-bg: #E8F5E9; /* Veľmi svetlá zelená pre jemné pozadia */
+  --text-dark: #2c3e50; /* Tmavšia šedá pre hlavný text */
+  --text-medium: #555e68; /* Stredne tmavá šedá pre doplňujúci text */
+  --text-light: #7f8c8d; /* Svetlá šedá */
+  --bg-color: #f8f9fa; /* Pozadie stránky - veľmi svetlo šedá */
+  --card-bg: #ffffff; /* Biela pre karty/sekcie */
+  --border-color: #e0e6ed; /* Farba pre ohraničenia */
+  --shadow: 0 6px 18px rgba(0, 0, 0, 0.07); /* Jemný tieň */
+  --border-radius: 12px; /* Zaoblenie rohov */
+  --font-heading: 'Merriweather', serif; /* Font pre nadpisy */
+  --font-body: 'Nunito', sans-serif; /* Font pre bežný text */
+}
 
 body {
-  font-family: 'Montserrat', sans-serif; /* Nový hlavný font */
   margin: 0;
-  background-color: #EAF2E3; /* Veľmi jemná zelenkavá / béžová */
-  color: #3E4E50; /* Tmavšia, tlmenejšia farba textu */
+  font-family: var(--font-body);
+  background-color: var(--bg-color);
+  color: var(--text-dark);
   line-height: 1.7;
-  font-weight: 400;
+  font-size: 16px; /* Základná veľkosť fontu */
 }
 
 .app-container {
-  max-width: 1100px;
+  max-width: 1200px;
   margin: 30px auto;
   padding: 20px;
 }
 
-header {
+.app-container header {
   text-align: center;
-  margin-bottom: 50px;
+  margin-bottom: 40px;
 }
 
-header h1 {
-  font-family: 'Merriweather', serif; /* Font pre nadpis */
-  font-size: 2.8em;
-  color: #3A5A40; /* Tmavozelená */
-  font-weight: 400;
-  letter-spacing: 0.5px;
+.app-container header h1 {
+  font-family: var(--font-heading);
+  color: var(--primary-green);
+  font-size: 2.6em; /* Trochu menšie pre lepšiu čitateľnosť */
+  margin-bottom: 0.2em;
+  font-weight: 700;
 }
 
 main {
-  display: grid;
-  /* Dva stĺpce, ľavý trochu menší, pravý väčší pre strom */
-  /* Alebo necháme responzívne, ak chceme pod sebou na menších obrazovkách */
-  grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
-  gap: 35px;
+  display: flex;
+  gap: 30px;
+  flex-wrap: wrap; /* Umožní zalomenie na menších obrazovkách */
 }
 
-.habits-section, .tree-section {
-  background-color: #FDFFF7; /* Veľmi svetlá, takmer biela s nádychom */
-  padding: 30px;
-  border-radius: 15px;
-  box-shadow: 0 8px 25px rgba(42, 72, 53, 0.1); /* Jemný zelenkavý tieň */
-  border: 1px solid #D8E2DC; /* Veľmi jemný okraj */
+.habits-section,
+.tree-section {
+  background-color: var(--card-bg);
+  padding: 30px; /* Viac vnútorného priestoru */
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column; /* Aby obsah rástol vertikálne */
 }
 
-.habits-section h2, .tree-section h2 {
-  font-family: 'Merriweather', serif;
+.habits-section {
+  flex-basis: 40%; /* Pomer šírky pre sekciu návykov */
+  min-width: 320px; /* Minimálna šírka pred zalomením */
+}
+
+.tree-section {
+  flex-basis: 55%; /* Väčší priestor pre strom */
+  min-width: 440px; /* Aby sa zmestil canvas (400px) + padding */
+  align-items: center; /* Centrovať strom a text pod ním */
+}
+
+.habits-section h2,
+.tree-section h2 {
+  font-family: var(--font-heading);
+  color: var(--text-dark);
   margin-top: 0;
-  color: #588157; /* Stredne zelená */
-  border-bottom: 1px solid #A3B18A; /* Svetlejšia zelená pre čiaru */
-  padding-bottom: 15px;
-  margin-bottom: 30px;
-  font-size: 1.8em;
-  font-weight: 400;
+  margin-bottom: 25px;
+  text-align: center;
+  font-size: 1.6em;
+  border-bottom: 2px solid var(--primary-green);
+  padding-bottom: 10px;
 }
 
 .add-habit-form {
   display: flex;
   margin-bottom: 30px;
+  gap: 10px;
 }
 
 .add-habit-form input[type="text"] {
   flex-grow: 1;
-  padding: 14px 18px;
-  border: 1px solid #CAD2C5; /* Svetlozelená/sivá */
-  border-radius: 8px 0 0 8px;
+  padding: 12px 15px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
   font-size: 1em;
-  background-color: #F7F9F5;
-  color: #3E4E50;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-.add-habit-form input[type="text"]::placeholder {
-  color: #8A9A8C;
+  font-family: var(--font-body);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .add-habit-form input[type="text"]:focus {
   outline: none;
-  border-color: #84A98C; /* Tmavšia zelená pri focuse */
-  box-shadow: 0 0 0 3px rgba(132, 169, 140, 0.2);
-  background-color: #fff;
+  border-color: var(--primary-green);
+  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
 }
 
 .add-habit-form button {
-  padding: 14px 25px;
-  background-color: #588157; /* Stredne zelená */
+  padding: 12px 20px;
+  background-color: var(--primary-green);
   color: white;
   border: none;
-  border-radius: 0 8px 8px 0;
+  border-radius: 8px;
   cursor: pointer;
+  font-weight: 600; /* Trochu menej tučné pre Nunito */
+  font-family: var(--font-body);
+  transition: background-color 0.2s ease;
   font-size: 1em;
-  font-weight: 500; /* Montserrat medium */
-  letter-spacing: 0.5px;
-  transition: background-color 0.3s ease;
 }
 
 .add-habit-form button:hover {
-  background-color: #3A5A40; /* Tmavšia zelená */
+  background-color: var(--primary-green-darker);
 }
 
-/* Štýl pre text pod stromom */
-.tree-section p {
-  font-size: 0.95em;
-  color: #5A725A;
+.loading-message,
+.no-habits-message {
+  text-align: center;
+  color: var(--text-medium);
+  padding: 40px 10px;
+  font-size: 1.1em;
+  font-style: italic;
+}
+
+/* Responzivita */
+@media (max-width: 920px) { /* Bod zlomu, kedy idú sekcie pod seba */
+  main {
+    flex-direction: column;
+  }
+  .habits-section,
+  .tree-section {
+    flex-basis: auto; /* Reset basis */
+    width: 100%; /* Plná šírka, keď sú pod sebou */
+    box-sizing: border-box; /* Aby padding nepridával k šírke */
+  }
+  .tree-section {
+    min-width: auto; /* Reset min-width pre tree-section na mobiloch */
+  }
 }

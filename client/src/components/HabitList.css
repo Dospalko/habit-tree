@@ -1,16 +1,8 @@
-/* client/src/components/HabitList.css */
 .habit-list {
-    list-style-type: none;
+    list-style: none;
     padding: 0;
     margin: 0;
-  }
-  
-  .habit-list > p { /* Zmenil som na priameho potomka, ak by bol text v App.jsx */
-    text-align: center;
-    color: #7f8c8d;
-    padding: 25px 0;
-    font-style: italic;
-    background-color: rgba(240, 240, 240, 0.5); /* Priesvitnejšie pozadie pre text */
-    border-radius: 6px;
-    font-size: 0.95em;
+    flex-grow: 1; /* Aby zoznam vyplnil dostupný priestor v habits-section */
+    overflow-y: auto; /* Scrollbar, ak je veľa návykov */
+    max-height: 400px; /* Príklad maximálnej výšky, prispôsob podľa potreby */
   }
