@@ -3,80 +3,90 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 12px 15px; /* Zväčšil som padding pre lepší vzhľad */
-    margin-bottom: 10px;
-    background-color: #ffffff; /* Čistá biela */
-    border-radius: 6px;
-    border: 1px solid #e0e0e0;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    padding: 15px 20px;
+    margin-bottom: 12px;
+    background-color: #F7F9F5; /* Svetlé pozadie ako input */
+    border-radius: 8px;
+    border: 1px solid #E0E8DD;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.04);
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
   }
   
   .habit-item:hover {
-    background-color: #f7f9fa;
-    border-color: #d0d0d0;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.06);
   }
   
   .habit-item.completed {
-    background-color: #e8f5e9; /* Jemne zelená pre splnené */
-    border-left: 5px solid #4CAF50; /* Zelený ľavý okraj pre zvýraznenie */
-    padding-left: 10px; /* Upraviť padding kvôli borderu */
+    background-color: #E6EFE1; /* Veľmi jemná zelená pre splnené */
+    border-left: 6px solid #7CB342; /* Jasnejšia zelená pre okraj */
+    padding-left: 14px;
   }
   
   .habit-item.completed span {
-    text-decoration: line-through;
-    color: #757575; /* Tmavšia sivá pre preškrtnutý text */
+    text-decoration: none; /* Odstránime preškrtnutie, okraj je dostatočný indikátor */
+    color: #617C57; /* Tlmenejšia zelená pre text splneného */
+  }
+  
+  .habit-item.completed span small {
+    color: #799271;
   }
   
   .habit-item span {
     flex-grow: 1;
     margin-right: 15px;
-    font-size: 1.05em; /* Trochu väčšie písmo pre názov návyku */
-    color: #333;
+    font-size: 1.05em;
+    color: #4A5C4F; /* Tmavšia textová farba */
     line-height: 1.4;
+    font-weight: 500; /* Montserrat medium */
   }
   
-  .habit-item span small { /* Pre text "(Celkovo splnené: X dní)" */
+  .habit-item span small {
     display: block;
-    font-size: 0.8em;
-    color: #777;
-    margin-top: 2px;
+    font-size: 0.85em;
+    color: #78887D;
+    margin-top: 3px;
+    font-weight: 400; /* Montserrat regular */
   }
-  
   
   .habit-item button {
-    padding: 8px 16px; /* Zväčšil som padding tlačidla */
-    border: none;
-    border-radius: 4px;
+    padding: 9px 18px;
+    border: 1px solid transparent;
+    border-radius: 6px;
     cursor: pointer;
     font-size: 0.9em;
-    font-weight: 500; /* Stredne tučné */
-    transition: background-color 0.2s ease, transform 0.1s ease;
-    min-width: 100px; /* Aby mali tlačidlá podobnú šírku */
+    font-weight: 600; /* Montserrat semibold */
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.1s ease;
+    min-width: 100px;
     text-align: center;
+    letter-spacing: 0.3px;
   }
   
   .habit-item button:active {
-      transform: scale(0.98); /* Efekt stlačenia */
+    transform: scale(0.97);
   }
   
-  /* Tlačidlo pre "Splnené dnes" */
+  /* Tlačidlo pre "Splnené" */
   .habit-item:not(.completed) button {
-    background-color: #2ecc71; /* Jasnejšia zelená */
+    background-color: #6A994E; /* Zelené tlačidlo */
     color: white;
+    border-color: #6A994E;
   }
   
   .habit-item:not(.completed) button:hover {
-    background-color: #27ae60; /* Tmavšia zelená pri hoveri */
+    background-color: #577F40;
+    border-color: #577F40;
   }
   
   /* Tlačidlo pre "Odznačiť" */
   .habit-item.completed button {
-    background-color: #e74c3c; /* Červená */
-    color: white;
+    background-color: transparent;
+    color: #A5645A; /* Tlmená červená */
+    border: 1px solid #D4AFA9;
   }
   
   .habit-item.completed button:hover {
-    background-color: #c0392b; /* Tmavšia červená pri hoveri */
+    background-color: #FBEAE8;
+    color: #934C42;
+    border-color: #C49B94;
   }

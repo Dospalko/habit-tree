@@ -1,88 +1,107 @@
 /* client/src/App.css */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Merriweather:wght@300;400&display=swap');
+
 body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Modernejší font stack */
+  font-family: 'Montserrat', sans-serif; /* Nový hlavný font */
   margin: 0;
-  background-color: #f4f7f6; /* Svetlejšia, neutrálnejšia sivá */
-  color: #333;
-  line-height: 1.6; /* Lepšia čitateľnosť */
+  background-color: #EAF2E3; /* Veľmi jemná zelenkavá / béžová */
+  color: #3E4E50; /* Tmavšia, tlmenejšia farba textu */
+  line-height: 1.7;
+  font-weight: 400;
 }
 
 .app-container {
-  max-width: 1000px; /* Trochu širší kontajner */
-  margin: 20px auto; /* Pridal som margin hore a dole */
+  max-width: 1100px;
+  margin: 30px auto;
   padding: 20px;
-  /* background-color: #fff; Ak by sme chceli hlavný kontajner biely */
-  /* border-radius: 8px; */
-  /* box-shadow: 0 0 20px rgba(0,0,0,0.05); */
 }
 
 header {
   text-align: center;
-  margin-bottom: 40px; /* Väčší odstup */
+  margin-bottom: 50px;
 }
 
 header h1 {
-  font-size: 2.5em; /* Väčší nadpis */
-  color: #2c3e50; /* Tmavomodrá */
-  font-weight: 300; /* Tenší font pre nadpis */
-  letter-spacing: 1px;
+  font-family: 'Merriweather', serif; /* Font pre nadpis */
+  font-size: 2.8em;
+  color: #3A5A40; /* Tmavozelená */
+  font-weight: 400;
+  letter-spacing: 0.5px;
 }
 
 main {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); /* Responzívnejšie stĺpce */
-  gap: 40px; /* Väčšia medzera */
+  /* Dva stĺpce, ľavý trochu menší, pravý väčší pre strom */
+  /* Alebo necháme responzívne, ak chceme pod sebou na menších obrazovkách */
+  grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+  gap: 35px;
 }
 
 .habits-section, .tree-section {
-  background-color: #ffffff;
-  padding: 25px; /* Viac paddingu */
-  border-radius: 12px; /* Väčšie zaoblenie */
-  box-shadow: 0 5px 15px rgba(0,0,0,0.07); /* Jemný tieň */
+  background-color: #FDFFF7; /* Veľmi svetlá, takmer biela s nádychom */
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 8px 25px rgba(42, 72, 53, 0.1); /* Jemný zelenkavý tieň */
+  border: 1px solid #D8E2DC; /* Veľmi jemný okraj */
 }
 
 .habits-section h2, .tree-section h2 {
+  font-family: 'Merriweather', serif;
   margin-top: 0;
-  color: #34495e; /* Tmavšia sivo-modrá */
-  border-bottom: 1px solid #ecf0f1; /* Jemnejšia oddeľovacia čiara */
+  color: #588157; /* Stredne zelená */
+  border-bottom: 1px solid #A3B18A; /* Svetlejšia zelená pre čiaru */
   padding-bottom: 15px;
-  margin-bottom: 25px;
-  font-size: 1.6em;
+  margin-bottom: 30px;
+  font-size: 1.8em;
   font-weight: 400;
 }
 
 .add-habit-form {
   display: flex;
-  margin-bottom: 25px; /* Väčší odstup */
+  margin-bottom: 30px;
 }
 
-.add-habit-form input[type="text"] { /* Špecifickejší selektor */
+.add-habit-form input[type="text"] {
   flex-grow: 1;
-  padding: 12px 15px; /* Väčší padding */
-  border: 1px solid #bdc3c7; /* Svetlejšia sivá pre border */
-  border-radius: 6px 0 0 6px; /* Zaoblenie */
+  padding: 14px 18px;
+  border: 1px solid #CAD2C5; /* Svetlozelená/sivá */
+  border-radius: 8px 0 0 8px;
   font-size: 1em;
-  transition: border-color 0.3s ease;
+  background-color: #F7F9F5;
+  color: #3E4E50;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.add-habit-form input[type="text"]::placeholder {
+  color: #8A9A8C;
 }
 
 .add-habit-form input[type="text"]:focus {
   outline: none;
-  border-color: #3498db; /* Modrá pri focuse */
-  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+  border-color: #84A98C; /* Tmavšia zelená pri focuse */
+  box-shadow: 0 0 0 3px rgba(132, 169, 140, 0.2);
+  background-color: #fff;
 }
 
 .add-habit-form button {
-  padding: 12px 20px;
-  background-color: #3498db; /* Modrá */
+  padding: 14px 25px;
+  background-color: #588157; /* Stredne zelená */
   color: white;
   border: none;
-  border-radius: 0 6px 6px 0;
+  border-radius: 0 8px 8px 0;
   cursor: pointer;
   font-size: 1em;
-  font-weight: 500;
+  font-weight: 500; /* Montserrat medium */
+  letter-spacing: 0.5px;
   transition: background-color 0.3s ease;
 }
 
 .add-habit-form button:hover {
-  background-color: #2980b9; /* Tmavšia modrá */
+  background-color: #3A5A40; /* Tmavšia zelená */
+}
+
+/* Štýl pre text pod stromom */
+.tree-section p {
+  font-size: 0.95em;
+  color: #5A725A;
 }
