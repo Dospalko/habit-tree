@@ -1,69 +1,88 @@
 /* client/src/App.css */
 body {
-  font-family: sans-serif;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Modernejší font stack */
   margin: 0;
-  background-color: #f0f4f8;
+  background-color: #f4f7f6; /* Svetlejšia, neutrálnejšia sivá */
   color: #333;
+  line-height: 1.6; /* Lepšia čitateľnosť */
 }
 
 .app-container {
-  max-width: 900px;
-  margin: 0 auto;
+  max-width: 1000px; /* Trochu širší kontajner */
+  margin: 20px auto; /* Pridal som margin hore a dole */
   padding: 20px;
+  /* background-color: #fff; Ak by sme chceli hlavný kontajner biely */
+  /* border-radius: 8px; */
+  /* box-shadow: 0 0 20px rgba(0,0,0,0.05); */
 }
 
 header {
   text-align: center;
-  margin-bottom: 30px;
-  color: #2c3e50;
+  margin-bottom: 40px; /* Väčší odstup */
+}
+
+header h1 {
+  font-size: 2.5em; /* Väčší nadpis */
+  color: #2c3e50; /* Tmavomodrá */
+  font-weight: 300; /* Tenší font pre nadpis */
+  letter-spacing: 1px;
 }
 
 main {
   display: grid;
-  grid-template-columns: 1fr 1fr; /* Dva stĺpce */
-  gap: 30px;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); /* Responzívnejšie stĺpce */
+  gap: 40px; /* Väčšia medzera */
 }
 
 .habits-section, .tree-section {
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  background-color: #ffffff;
+  padding: 25px; /* Viac paddingu */
+  border-radius: 12px; /* Väčšie zaoblenie */
+  box-shadow: 0 5px 15px rgba(0,0,0,0.07); /* Jemný tieň */
 }
 
 .habits-section h2, .tree-section h2 {
   margin-top: 0;
-  color: #34495e;
-  border-bottom: 2px solid #e0e0e0;
-  padding-bottom: 10px;
-  margin-bottom: 20px;
+  color: #34495e; /* Tmavšia sivo-modrá */
+  border-bottom: 1px solid #ecf0f1; /* Jemnejšia oddeľovacia čiara */
+  padding-bottom: 15px;
+  margin-bottom: 25px;
+  font-size: 1.6em;
+  font-weight: 400;
 }
 
 .add-habit-form {
   display: flex;
-  margin-bottom: 20px;
+  margin-bottom: 25px; /* Väčší odstup */
 }
 
-.add-habit-form input {
+.add-habit-form input[type="text"] { /* Špecifickejší selektor */
   flex-grow: 1;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px 0 0 4px;
+  padding: 12px 15px; /* Väčší padding */
+  border: 1px solid #bdc3c7; /* Svetlejšia sivá pre border */
+  border-radius: 6px 0 0 6px; /* Zaoblenie */
   font-size: 1em;
+  transition: border-color 0.3s ease;
+}
+
+.add-habit-form input[type="text"]:focus {
+  outline: none;
+  border-color: #3498db; /* Modrá pri focuse */
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
 }
 
 .add-habit-form button {
-  padding: 10px 15px;
-  background-color: #3498db;
+  padding: 12px 20px;
+  background-color: #3498db; /* Modrá */
   color: white;
   border: none;
-  border-radius: 0 4px 4px 0;
+  border-radius: 0 6px 6px 0;
   cursor: pointer;
   font-size: 1em;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
 }
 
 .add-habit-form button:hover {
-  background-color: #2980b9;
+  background-color: #2980b9; /* Tmavšia modrá */
 }
-
-/* Ostatné CSS súbory (HabitList.css, HabitItem.css, TreeVisualizer.css) si vytvor podobne */
