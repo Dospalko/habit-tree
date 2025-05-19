@@ -1,16 +1,18 @@
-// client/src/components/HabitList.jsx
 import React from 'react';
 import HabitItem from './HabitItem';
-import './HabitList.css'; // Vytvoríme si neskôr
+import './HabitList.css';
 
-function HabitList({ habits, onToggleHabit }) {
+// Pridáme onDeleteHabit ako prop
+function HabitList({ habits, onToggleHabit, onDeleteHabit }) {
   if (!habits || habits.length === 0) {
-    return <p>Zatiaľ žiadne návyky. Pridaj si nejaký!</p>;
+    // Tento text sa už nezobrazí, ak máme `no-habits-message` v App.jsx
+    return null;
   }
   return (
     <ul className="habit-list">
       {habits.map(habit => (
-        <HabitItem key={habit.id} habit={habit} onToggle={onToggleHabit} />
+        // Posunieme onDeleteHabit do HabitItem
+        <HabitItem key={habit.id} habit={habit} onToggle={onToggleHabit} onDelete={onDeleteHabit} />
       ))}
     </ul>
   );
