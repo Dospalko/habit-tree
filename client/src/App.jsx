@@ -73,7 +73,7 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-cosmic-bg text-cosmic-text-main p-4 md:p-8 font-nunito selection:bg-cosmic-accent-primary selection:text-white">
+    <div className="min-h-screen bg-black text-white p-4 md:p-8 font-nunito selection:bg-cosmic-accent-primary selection:text-white">
       <div className="max-w-6xl mx-auto">
         <header className="text-center mb-10 md:mb-16 animate-subtle-float">
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold font-merriweather text-transparent bg-clip-text bg-gradient-to-br from-cosmic-accent-primary via-purple-400 to-cosmic-accent-secondary filter drop-shadow-[0_0_8px_rgba(160,32,240,0.5)]">

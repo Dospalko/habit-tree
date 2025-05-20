@@ -8,7 +8,7 @@ export default {
     theme: {
       extend: { // Dôležité je použiť `extend`, aby si neprepísal defaultnú tému
         colors: {
-          'cosmic-bg': '#0F1020',
+          'cosmic-bg': '#1C1D30',
           'cosmic-card': '#1C1D30',
           'cosmic-text-main': '#E8E9F3',
           'cosmic-text-muted': '#9195B2',
