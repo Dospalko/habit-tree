@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import HabitList from './components/HabitList';
-import TreeVisualizer from './components/TreeVisualizer';
+import NightSkyVisualizer from './components/NightSkyVisualizer'; // ZMENA NÁZVU
 import './App.css';
 
 const API_URL = 'http://localhost:3001/api';
@@ -15,7 +15,7 @@ function App() {
     setIsLoading(true);
     try {
       const response = await axios.get(`${API_URL}/habits`);
-      // Zoradenie návykov podľa dátumu vytvorenia pre konzistentné poradie vetiev
+      // Zoradenie návykov pre konzistentné poradie hviezd
       const sortedHabits = response.data.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
       setHabits(sortedHabits);
     } catch (error) {
@@ -33,9 +33,9 @@ function App() {
     e.preventDefault();
     if (!newHabitName.trim()) return;
     try {
-      const response = await axios.post(`${API_URL}/habits`, { name: newHabitName.trim() });
-      // Znova načítame všetky návyky, aby sme mali správne zoradenie a seed z backendu
-      fetchHabits();
+      // Po pridaní návyku na serveri, znovu načítaj všetky pre konzistenciu
+      await axios.post(`${API_URL}/habits`, { name: newHabitName.trim() });
+      fetchHabits(); // Znovu načítaj, aby sa zobrazil aj nový `starSeed`
       setNewHabitName('');
     } catch (error) {
       console.error("Chyba pri pridávaní návyku:", error);
@@ -49,31 +49,26 @@ function App() {
       setHabits(prevHabits =>
         prevHabits.map(h =>
           h.id === habitId ? updatedHabit : h
-        ).sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt)) // Udržuj zoradenie
+        ).sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
       );
     } catch (error) {
       console.error("Chyba pri označovaní návyku:", error);
     }
   };
 
-  // Odstránenie návyku pre testovanie
   const handleDeleteHabit = async (habitId) => {
     try {
         await axios.delete(`${API_URL}/habits/${habitId}`);
-        fetchHabits(); // Znovu načítaj návyky
+        fetchHabits();
     } catch (error) {
         console.error("Chyba pri mazaní návyku:", error);
     }
   };
 
-
-  // growthFactor pre celkovú "sviežosť" stromu (počet dnes splnených)
-  const growthFactor = habits.reduce((acc, habit) => acc + (habit.completedToday ? 1 : 0), 0);
-
   if (isLoading) {
     return (
       <div className="app-container">
-        <p className="loading-message">Načítavam Tvoj les návykov...</p>
+        <p className="loading-message">Načítavam Tvoju nočnú oblohu...</p>
       </div>
     );
   }
@@ -81,7 +76,7 @@ function App() {
   return (
     <div className="app-container">
       <header>
-        <h1>Môj Návykový Strom</h1>
+        <h1>Moja Návyková Obloha</h1> {/* ZMENA NÁZVU APLIKÁCIE */}
       </header>
       <main>
         <section className="habits-section">
@@ -91,28 +86,23 @@ function App() {
               type="text"
               value={newHabitName}
               onChange={(e) => setNewHabitName(e.target.value)}
-              placeholder="Napr. Ranná jóga..."
+              placeholder="Napr. Večerná prechádzka..."
             />
             <button type="submit">Pridať</button>
           </form>
           {habits.length > 0 ? (
-            // Upravíme HabitList, aby prijímal aj handleDelete
             <HabitList habits={habits} onToggleHabit={toggleHabitCompletion} onDeleteHabit={handleDeleteHabit} />
           ) : (
             <p className="no-habits-message">
-              Zatiaľ žiadne návyky. Pridaj si prvý a sleduj, ako Tvoj strom rastie!
+              Pridaj svoj prvý návyk a rozsvieť svoju prvú hviezdu!
             </p>
           )}
         </section>
-        <section className="tree-section">
-          <h2>Strom Progresu</h2>
-          <TreeVisualizer
-            habits={habits} // Posielame celé pole návykov
-            overallGrowthFactor={growthFactor} // Pre celkovú sviežosť
-          />
-          {/* Štatistiky môžu byť zjednodušené alebo odstránené, ak sa strom stará o vizualizáciu */}
+        <section className="tree-section"> {/* CSS class môže ostať, ak sú štýly univerzálne */}
+          <h2>Hviezdna Mapa Progresu</h2>
+          <NightSkyVisualizer habits={habits} /> {/* ZMENA NÁZVU KOMPONENTU A PROPS */}
           <p style={{textAlign: 'center', marginTop: '5px', color: 'var(--text-medium)', fontSize: '0.95em'}}>
-             Počet návykov: <strong>{habits.length}</strong> | Dnes splnených: <strong>{growthFactor}</strong>
+             Počet hviezd (návykov): <strong>{habits.length}</strong>
           </p>
         </section>
       </main>
