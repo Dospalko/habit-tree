@@ -5,3 +5,18 @@ body {
   /* @apply bg-slate-100 text-slate-800 font-nunito; */ /* Príklad, ak máš Nunito nakonfigurovaný */
   @apply bg-gray-100 text-gray-800 font-sans; /* Použije default Tailwind sans-serif font */
 }
+/* src/index.css na konci */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: theme('colors.gray.700'); /* Alebo iná farba pozadia tracku */
+  border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: theme('colors.sky.600'); /* Farba thumbu */
+  border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: theme('colors.sky.500'); /* Farba thumbu pri hoveri */
+}

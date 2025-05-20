@@ -1,8 +1,0 @@
-.habit-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    flex-grow: 1; /* Aby zoznam vyplnil dostupný priestor v habits-section */
-    overflow-y: auto; /* Scrollbar, ak je veľa návykov */
-    max-height: 400px; /* Príklad maximálnej výšky, prispôsob podľa potreby */
-  }

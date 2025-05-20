@@ -1,7 +1,0 @@
-@import "tailwindcss";
-
-/* Voliteľné: Globálny štýl pre body, ak chceš zmeniť default font alebo pozadie */
-body {
-  /* @apply bg-slate-100 text-slate-800 font-nunito; */ /* Príklad, ak máš Nunito nakonfigurovaný */
-  @apply bg-gray-100 text-gray-800 font-sans; /* Použije default Tailwind sans-serif font */
-}
